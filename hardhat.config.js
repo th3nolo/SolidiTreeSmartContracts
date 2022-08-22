@@ -5,8 +5,8 @@ const privateKey = process.env.PRIVATE_KEY;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.9",
-  networks: {
+  solidity: "0.8.10",
+  networks: {    
     ropsten: {
       url: process.env.ROPSTEN_URL || "",
       accounts:
@@ -16,7 +16,7 @@ module.exports = {
       url: process.env.ALCHEMY_ENDPOINT_MUMBAI,
       accounts: [ privateKey ],
       gas: 2100000,
-      gasPrice: 8000000000
+      gasPrice: 8000000000,      
     },
   },
   gasReporter: {
@@ -25,5 +25,7 @@ module.exports = {
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
-  },
+  },  
 };
+
+

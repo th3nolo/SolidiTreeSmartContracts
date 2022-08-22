@@ -3,22 +3,23 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Wrapper.sol";
-//import "@openzeppelin/contracts/access/IAccessControl.sol";
+import '@aave/core-v3/contracts/interfaces/IPool.sol';
+//import '@aave/core-v3/contracts/interfaces/IAToken.sol';
 import "./SolidiTreeNft.sol";
 import "hardhat/console.sol";
 
-contract SolidiTreeProtocolAAVE is ERC20Wrapper, AccessControl {
+contract SolidiTreeProtocol is ERC20Wrapper, AccessControl {
     bytes32 public constant WHITE_LISTED_ROLE = keccak256("WHITE_LISTED_ROLE");
     event stakeStartedAt(address indexed owner, uint256 indexed startedAt);
     event stakeEndedAt(address indexed owner, uint256 indexed endedAt);
     event stakeResumeAt(address indexed owner, uint256 indexed resumeAt);
     SolidiTreeNft private _whitelist;
+    IPool public aaveLendingPool = IPool(0x6C9fB0D5bD9429eb9Cd96B85B81d872281771E6B);
+    IERC20 public _USDT = IERC20(0x21C561e551638401b937b03fE5a0a0652B99B7DD);
     mapping(address => bool) private isActive;
     mapping(address => bool) private isResume;
     mapping(address => uint256) private numberOfDeposits;
 
-    //mapping (address => uint256) private startedDate;
-    //mapping (address => uint256) private endedDate;
 
     constructor(
         IERC20 _underlying,
@@ -27,13 +28,16 @@ contract SolidiTreeProtocolAAVE is ERC20Wrapper, AccessControl {
         address whitelist
     ) ERC20(_name, _symbol) ERC20Wrapper(_underlying) {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _whitelist = SolidiTreeNft(whitelist);
+        _whitelist = SolidiTreeNft(whitelist);    
+        _USDT.approve(address(aaveLendingPool), type(uint256).max);        
     }
 
     function deposit(uint256 _amount) public payable {
         //require(msg.value > 0, "value can't be 0");
         require(approve(address(this), _amount), "approve failed");
         require(msg.sender != address(0), "adress can't be adress 0");
+        require(_USDT.transferFrom(msg.sender, address(this), _amount), "USDT Transfer failed!");
+        
         if (numberOfDeposits[msg.sender] == 0) {
             emit stakeStartedAt(msg.sender, block.timestamp);
             _isResume(msg.sender);
@@ -45,7 +49,8 @@ contract SolidiTreeProtocolAAVE is ERC20Wrapper, AccessControl {
                 _isResume(msg.sender);
             }
         }
-        depositFor(msg.sender, _amount);
+        depositFor(msg.sender, _amount);    
+        aaveLendingPool.deposit(address(_USDT), _amount,address(this) ,0);    
         numberOfDeposits[msg.sender]++;        
         _whitelist.contractGrantRole(WHITE_LISTED_ROLE, msg.sender);
         _isActive(msg.sender);
@@ -82,12 +87,12 @@ contract SolidiTreeProtocolAAVE is ERC20Wrapper, AccessControl {
     function withdraw(uint256 _amount) public payable {
         require(_amount > 0, "amount can't be 0");
         require(msg.sender != address(0), "adress can't be adress 0");
-        withdrawTo(msg.sender, _amount);
+        aaveLendingPool.withdraw(address(_USDT),_amount, address(this));              
         _isActive(msg.sender);
-        //endedDate[msg.sender] = block.timestamp;
         if (!isStaking(msg.sender)) {
             emit stakeEndedAt(msg.sender, block.timestamp);
         }
+        require(withdrawTo(msg.sender, _amount), "didn't send the money to the user");        
     }
 
     function _afterTokenTransfer(

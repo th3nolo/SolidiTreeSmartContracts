@@ -26,33 +26,52 @@ const main = async () => {
   let whitelisted = ethers.utils.id("WHITE_LISTED_ROLE");
   let contract = ethers.utils.id("SMART_CONTRACT_ROLE");
   tx = await NFT.grantRole(contract, tokenWrapper.address);  
-  console.log(tx);
+  //console.log(tx);
   //console.log(tx)
   tx = await token.transfer(user1.address, ethers.utils.parseEther("1"));
   //console.log(tx)
   tx = await token
     .connect(user1)
     .approve(tokenWrapper.address, ethers.utils.parseEther("1"));
-  console.log(tx);
+  //console.log(tx);
   tx = await tokenWrapper.connect(user1).deposit(1);
-  console.log(tx);
+  //console.log(tx);
   tx = await token.approve(tokenWrapper.address, ethers.utils.parseEther("1"));
-  console.log(tx);
+  //console.log(tx);
+  tx = await tokenWrapper.isStaking(owner.address);
+  console.log("The owner is staking?: ", tx);
+  tx = await tokenWrapper.isStaking(user2.address);
+  console.log("The user2 is staking?: ", tx);
   tx = await tokenWrapper.deposit(1)
-  console.log(tx);
+  //console.log(tx);
+  tx = await tokenWrapper.isStaking(owner.address);
+  console.log("The owner is staking :", tx);
+  tx = await tokenWrapper.depositIndex(owner.address);
+  console.log("This is his deposit index :", tx);
+  tx = await tokenWrapper.isResuming(owner.address);
+  console.log("The owner is resuming? : ", tx);
+  tx = await tokenWrapper.deposit(1);
+  tx = await tokenWrapper.isResuming(owner.address);
+  console.log("The owner is resuming? : ", tx);
+  tx = await tokenWrapper.withdraw(2)
+  tx = await tokenWrapper.isStaking(owner.address);
+  console.log("the owner is staking :", tx)
   tx = await NFT.safeMint()
-  console.log(tx)
+  tx = await tokenWrapper.deposit(1);
+  tx = await tokenWrapper.isResuming(owner.address);
+  console.log("The owner is resuming? : ", tx);
+  //console.log(tx)
   //await hardhatToken.connect(addr1).transfer(addr2.address, 50);
-  tx = await NFT.connect(user1).safeMint();
-  console.log(tx);
-  tx = await NFT.balanceOf(owner.address);
-  console.log(tx);
-  tx = await NFT.balanceOf(user1.address);
-  console.log(tx);
-  tx = await NFT.tokenURI(1);
-  console.log(tx);
-  tx = await NFT.tokenURI(2);
-  console.log(tx);
+  //tx = await NFT.connect(user1).safeMint();
+  //console.log(tx);
+  //tx = await NFT.balanceOf(owner.address);
+  //console.log(tx);
+  //tx = await NFT.balanceOf(user1.address);
+  //console.log(tx);
+  //tx = await NFT.tokenURI(1);
+  //console.log(tx);
+  //tx = await NFT.tokenURI(2);
+  //console.log(tx);
   //tx = await NFT.transferFrom(owner.address, user1.address, 1);
   //tx = await NFT.safeMint()
   //console.log(tx)
