@@ -34,7 +34,7 @@ The NftDeployment script is used to deploy the contracts to the testnet, at the 
 The AAVE.js script lets you impersonate an account with a high USDT balance, so you can check the integration with the AAVE protocol, but for this, you need to --fork the mainnet. 
   
 documentation:  
-https://hardhat.org/hardhat-network/docs/guides/forking-other-networks
+- https://hardhat.org/hardhat-network/docs/guides/forking-other-networks
   
 you already have this command, yarn hardhat node --fork https://polygon-mumbai.g.alchemy.com/v2/<key\> change the key with your API key of an alchemy node.
   
