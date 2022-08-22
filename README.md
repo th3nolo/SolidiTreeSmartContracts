@@ -41,8 +41,8 @@ you already have this command, yarn hardhat node --fork https://polygon-mumbai.g
 then run yarn hardhat run scripts/AAVE.js w/o network to use your forked node of mumbai.
   
 For other networks, you need.
-Pool-Proxy-{network}
-The Underlying Asset Adress
+>1. Pool-Proxy-{network} 
+>2. The Underlying Asset Adress {Asset to deposit, in our case USDT}
   
 1. https://docs.aave.com/developers/deployed-contracts/v3-testnet-addresses
 2. https://docs.aave.com/developers/deployed-contracts/v3-mainnet
